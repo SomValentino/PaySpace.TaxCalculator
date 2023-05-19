@@ -11,6 +11,6 @@ namespace PaySpace.TaxCalculator.Application.Contracts.Processors
     public interface ITaxProcessor
     {
         TaxCalculationType GetTaxCalculationType {  get; }
-        decimal CalculateTax(PostalCodeTaxEntry entry,decimal annualIncome);
+        decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry = null);
     }
 }

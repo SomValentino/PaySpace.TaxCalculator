@@ -21,7 +21,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
             _serviceProvider = taxCalculatorApplication.Services.CreateScope().ServiceProvider;
         }
         [Test]
-        public void FlatRateTaxProcessor_Given_AnnaulIncome_Returns_Correct_TaxValue()
+        public void FlatRateTaxProcessor_Given_AnnualIncome_Returns_Correct_TaxValue()
         {
             var postalCodeEntry = new PostalCodeTaxEntry
             {
@@ -32,7 +32,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
 
             var flatRateProcessor = _serviceProvider.GetRequiredService<FlatRateTaxProcessor>();
 
-            var tax = flatRateProcessor.CalculateTax(postalCodeEntry, 350000.00M);
+            var tax = flatRateProcessor.CalculateTax(350000.00M,postalCodeEntry);
 
             var expectedValue = 61250.00M;
 
@@ -53,7 +53,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
 
             var flatValueProcessor = _serviceProvider.GetRequiredService<FlatValueTaxProcessor>();
 
-            var tax = flatValueProcessor.CalculateTax(postalCodeEntry, 150987.83M);
+            var tax = flatValueProcessor.CalculateTax(150987.83M, postalCodeEntry);
             var expectedValue = 7549.39M;
             Assert.AreEqual(expectedValue, tax);
         }
@@ -71,8 +71,80 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
 
             var flatValueProcessor = _serviceProvider.GetRequiredService<FlatValueTaxProcessor>();
 
-            var tax = flatValueProcessor.CalculateTax(postalCodeEntry, 250987.83M);
+            var tax = flatValueProcessor.CalculateTax(250987.83M,postalCodeEntry);
             var expectedValue = 10000.00M;
+            Assert.AreEqual(expectedValue, tax);
+        }
+
+        [Test]
+        public void ProgressiveTaxProcessor_Given_Annual_Income_5691_69_Returns_TaxValue()
+        {
+            var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
+
+            var tax = progressiveTaxProcessor.CalculateTax(5691.69M);
+
+            var expectedValue = 569.17M;
+
+            Assert.AreEqual(expectedValue, tax);
+        }
+
+        [Test]
+        public void ProgressiveTaxProcessor_Given_Annual_Income_10000_Returns_TaxValue()
+        {
+            var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
+
+            var tax = progressiveTaxProcessor.CalculateTax(10000.00M);
+
+            var expectedValue = 1082.50M;
+
+            Assert.AreEqual(expectedValue, tax);
+        }
+
+        [Test]
+        public void ProgressiveTaxProcessor_Given_Annual_Income_43567_Returns_TaxValue()
+        {
+            var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
+
+            var tax = progressiveTaxProcessor.CalculateTax(43567.00M);
+
+            var expectedValue = 7079.35M;
+
+            Assert.AreEqual(expectedValue, tax);
+        }
+
+        [Test]
+        public void ProgressiveTaxProcessor_Given_Annual_Income_143567_Returns_TaxValue()
+        {
+            var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
+
+            var tax = progressiveTaxProcessor.CalculateTax(143567.00M);
+
+            var expectedValue = 33918.92M;
+
+            Assert.AreEqual(expectedValue, tax);
+        }
+
+        [Test]
+        public void ProgressiveTaxProcessor_Given_Annual_Income_243567_Returns_TaxValue()
+        {
+            var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
+
+            var tax = progressiveTaxProcessor.CalculateTax(243567.00M);
+
+            var expectedValue = 65519.92M;
+
+            Assert.AreEqual(expectedValue, tax);
+        }
+
+        [Test]
+        public void ProgressiveTaxProcessor_Given_Annual_Income_443567_Returns_TaxValue()
+        {
+            var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
+
+            var tax = progressiveTaxProcessor.CalculateTax(443567.00M);
+
+            var expectedValue = 132932.34M;
+
             Assert.AreEqual(expectedValue, tax);
         }
     }

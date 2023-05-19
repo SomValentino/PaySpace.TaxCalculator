@@ -8,8 +8,9 @@ namespace PaySpace.TaxCalculator.Application.Contracts.Repository
 {
     public interface IUnitOfWork
     {
-        public IPostalCodeTaxMapRepository PostalCodeTaxMapRepository { get; }
-        public IProgressiveTaxTableRepository ProgressiveTaxTableRepository { get;  }
-        public ITaxResultRepository TaxResultRepository { get; }
+        IPostalCodeTaxMapRepository PostalCodeTaxMapRepository { get; }
+        IProgressiveTaxTableRepository ProgressiveTaxTableRepository { get;  }
+        ITaxResultRepository TaxResultRepository { get; }
+        Task<int> SaveToDatabaseAsync();
     }
 }

@@ -21,6 +21,7 @@ namespace PaySpace.TaxCalculator.Application
             services.AddScoped<FlatValueTaxProcessor>();
             services.AddScoped<ProgressiveTaxProcessor>();
             services.AddScoped<ITaxService, TaxService>();
+            services.AddScoped<ITaxProcessorFactory, TaxProcessorFactory>();
         }
     }
 }

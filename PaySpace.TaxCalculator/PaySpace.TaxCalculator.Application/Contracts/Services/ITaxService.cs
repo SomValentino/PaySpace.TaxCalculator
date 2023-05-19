@@ -1,4 +1,5 @@
 ﻿using PaySpace.TaxCalculator.Domain.Entities;
+using PaySpace.TaxCalculator.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace PaySpace.TaxCalculator.Application.Contracts.Services
 {
     public interface ITaxService
     {
-        TaxResult CalculateTax(string postalCode, decimal annualIncome);
+        Task<TaxResult> CalculateTaxAsync(PostalCodeTaxEntry postalCodeTaxEntry, decimal annualIncome);
+
+        Task<PostalCodeTaxEntry> GetPostalCodeTaxEntryAsync(string postalCode);
     }
 }

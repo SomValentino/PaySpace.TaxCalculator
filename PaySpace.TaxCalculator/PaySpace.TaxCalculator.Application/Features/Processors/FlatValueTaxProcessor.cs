@@ -13,7 +13,7 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
     {
         public TaxCalculationType GetTaxCalculationType => TaxCalculationType.FlatValue;
 
-        public decimal CalculateTax(PostalCodeTaxEntry entry, decimal annualIncome)
+        public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry = null)
         {
             if(annualIncome < entry.Threshold)
             {
