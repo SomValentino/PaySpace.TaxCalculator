@@ -1,0 +1,55 @@
+﻿@model PaySpace.TaxCalculator.WebApp.Models.TaxModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    @Model.ErrorMessage
+                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form", @id = "TextboxesForm" }))
+            {
+                <div class="form-group">
+                    @Html.LabelFor(m => m.PostalCode, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", @id = "PostalCode" })
+                    @Html.ValidationMessageFor(m => m.PostalCode, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.AnnualIncome, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.AnnualIncome, new { @class = "form-control", @id = "AnnualIncome" })
+                    @Html.ValidationMessageFor(m => m.AnnualIncome, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                    <input type="button" class="btn btn-danger" value="clear" id="btnsubmit" onclick="submitForm()">
+                </div>
+                
+            }
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    @Model.SuccessMessage
+                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    function submitForm() {
+        document.getElementById('PostalCode').value = '';
+        document.getElementById('AnnualIncome').value = '';
+    }
+</script>
