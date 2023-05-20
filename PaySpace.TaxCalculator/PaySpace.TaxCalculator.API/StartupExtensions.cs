@@ -12,19 +12,19 @@ namespace PaySpace.TaxCalculator.API
 {
     public static class StartupExtensions
     {
-        public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddInfrastructureServices(this IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
-            services.AddDbContext<TaxDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
+            
             services.AddScoped<IEnumerable<ITaxProcessor>>(options => GetInstances<ITaxProcessor>(serviceProvider));
         }
 
         public static void EnsureDatabaseSetup(this WebApplication application)
         {
             var context = application.Services.CreateScope().ServiceProvider.GetRequiredService<TaxDbContext>();
-            if(context.Database.IsRelational())
-                context.Database.Migrate();
+            
+            
+            context.Database.Migrate();
 
             TaxDataSeeder.Seed(context);
         }
@@ -33,7 +33,8 @@ namespace PaySpace.TaxCalculator.API
         {
             var instances = new List<T>();
             var foundInstances = Assembly.GetAssembly(typeof(T))?.GetTypes()
-                                ?.Where(detector => detector.IsAssignableFrom(typeof(T)));
+                                ?.Where(detector => detector.IsClass &&
+                                !detector.IsAbstract && typeof(T).IsAssignableFrom(detector));
 
             if (foundInstances != null && foundInstances.Any())
             {

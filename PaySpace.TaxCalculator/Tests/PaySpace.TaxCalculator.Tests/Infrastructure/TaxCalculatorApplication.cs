@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using PaySpace.TaxCalculator.API;
+using PaySpace.TaxCalculator.Application.Contracts.Processors;
 using PaySpace.TaxCalculator.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
@@ -19,8 +21,13 @@ namespace PaySpace.TaxCalculator.Tests.Infrastructure
             builder.ConfigureServices(services =>
             {
                 services.RemoveAll(typeof(DbContextOptions<TaxDbContext>));
+                services.RemoveAll(typeof(ITaxProcessor));
                 services.AddDbContext<TaxDbContext>(options => options.UseInMemoryDatabase("TaxDB"));
-            });
+                services.AddInfrastructureServices();
+                var context = services.BuildServiceProvider().CreateScope().ServiceProvider.GetService<TaxDbContext>();
+
+                TaxDataSeeder.Seed(context);
+            }).UseEnvironment("Test");
             return base.CreateHost(builder);
         }
     }

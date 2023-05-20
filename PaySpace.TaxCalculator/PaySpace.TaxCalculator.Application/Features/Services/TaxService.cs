@@ -45,5 +45,10 @@ namespace PaySpace.TaxCalculator.Application.Features.Services
         {
             return await _unitOfWork.PostalCodeTaxMapRepository.GetAsync(postalCode);
         }
+
+        public async Task<TaxResult> GetTaxResultAsync(int id)
+        {
+            return await _unitOfWork.TaxResultRepository.GetAsync(id);
+        }
     }
 }

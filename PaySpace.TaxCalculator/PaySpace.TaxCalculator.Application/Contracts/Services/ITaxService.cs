@@ -12,6 +12,8 @@ namespace PaySpace.TaxCalculator.Application.Contracts.Services
     {
         Task<TaxResult> CalculateTaxAsync(PostalCodeTaxEntry postalCodeTaxEntry, decimal annualIncome);
 
+        Task<TaxResult> GetTaxResultAsync(int id);
+
         Task<PostalCodeTaxEntry> GetPostalCodeTaxEntryAsync(string postalCode);
     }
 }

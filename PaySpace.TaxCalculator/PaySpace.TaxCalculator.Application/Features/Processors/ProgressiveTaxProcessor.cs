@@ -22,7 +22,7 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
 
         public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry = null)
         {
-            var progressiveTable = _unitOfWork.ProgressiveTaxTableRepository.GetAsync().Result;
+            var progressiveTable = _unitOfWork.ProgressiveTaxTableRepository.Get();
 
             var sum = 0.0M;
             var tax = 0.0M;

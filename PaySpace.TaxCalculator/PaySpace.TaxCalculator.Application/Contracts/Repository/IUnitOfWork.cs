@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Application.Contracts.Repository
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork:  IDisposable
     {
         IPostalCodeTaxMapRepository PostalCodeTaxMapRepository { get; }
         IProgressiveTaxTableRepository ProgressiveTaxTableRepository { get;  }

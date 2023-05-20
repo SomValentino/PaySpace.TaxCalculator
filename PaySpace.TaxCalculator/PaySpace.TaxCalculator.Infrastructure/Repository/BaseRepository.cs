@@ -30,6 +30,11 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
             _dataSet.Remove(entity);
         }
 
+        public IEnumerable<TEntity> Get()
+        {
+            return _dataSet.ToList();
+        }
+
         public async Task<TEntity> GetAsync(TKey key)
         {
             return await _dataSet.FindAsync(key);

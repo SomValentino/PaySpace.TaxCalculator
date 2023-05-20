@@ -1,4 +1,5 @@
-﻿using PaySpace.TaxCalculator.Application.Contracts.Repository;
+﻿using Microsoft.EntityFrameworkCore;
+using PaySpace.TaxCalculator.Application.Contracts.Repository;
 using PaySpace.TaxCalculator.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,26 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
         public async Task<int> SaveToDatabaseAsync()
         {
             return await _taxDbContext.SaveChangesAsync();
+        }
+        private bool disposed = false;
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _taxDbContext.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
