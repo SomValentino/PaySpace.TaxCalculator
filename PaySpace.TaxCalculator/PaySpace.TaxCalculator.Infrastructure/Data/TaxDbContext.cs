@@ -13,6 +13,7 @@ namespace PaySpace.TaxCalculator.Infrastructure.Data
         public DbSet<TaxResult> TaxResults => Set<TaxResult>();
         public DbSet<PostalCodeTaxEntry> PostalCodeTaxMap => Set<PostalCodeTaxEntry>();
         public DbSet<ProgressiveTaxEntry> ProgressiveTaxTable => Set<ProgressiveTaxEntry>();
+        public DbSet<ClientRegistration> ClientRegistrations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

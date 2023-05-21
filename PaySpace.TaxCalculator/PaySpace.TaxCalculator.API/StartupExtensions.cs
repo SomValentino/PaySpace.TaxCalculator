@@ -1,16 +1,24 @@
 ﻿
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using PaySpace.TaxCalculator.API.Dto;
+using PaySpace.TaxCalculator.API.Identity;
 using PaySpace.TaxCalculator.Application.Contracts.Processors;
+using PaySpace.TaxCalculator.Application.Contracts.Repository;
 using PaySpace.TaxCalculator.Application.Features.Processors;
 using PaySpace.TaxCalculator.Domain.Enums;
 using PaySpace.TaxCalculator.Infrastructure.Data;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using System.Text;
 
 namespace PaySpace.TaxCalculator.API
 {
@@ -28,6 +36,87 @@ namespace PaySpace.TaxCalculator.API
             var serviceProvider = services.BuildServiceProvider();
             
             services.AddScoped<IEnumerable<ITaxProcessor>>(options => GetInstances<ITaxProcessor>(serviceProvider));
+        }
+
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var settingManager = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var signingKey = settingManager.GetValue<string>("JwtKey");
+            var issuer = configuration["JwtIssuer"];
+            var audience = configuration["JwtAudience"];
+
+            services.AddTransient<IAuthorizationHandler, ValidTokenAuthorizationHandler>();
+            services.AddAuthorization();
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = audience,
+                        ValidIssuer = issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+                        RoleClaimType = ClaimTypes.Role,
+                        NameClaimType = ClaimTypes.NameIdentifier
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientRegistration", policy =>
+                {
+                    policy.RequireRole(configuration["role"]);
+                    policy.AddRequirements(new ValidTokenRequirement());
+                });
+            });
+
+            services.AddHttpContextAccessor();
+
+        }
+
+        public static void AddOpenApiDocumentation(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "TaxCalculator API",
+                    Description = "TaxCalculator API",
+                    Version = "v1"
+                });
+
+                c.AddSecurityDefinition("BearerAuth", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "BearerAuth"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
         }
 
         public static void UseException(this WebApplication app)
@@ -51,7 +140,8 @@ namespace PaySpace.TaxCalculator.API
         {
             var context = application.Services.CreateScope().ServiceProvider.GetRequiredService<TaxDbContext>();
             
-            context.Database.Migrate();
+            if(context.Database.IsRelational())
+                context.Database.Migrate();
 
             TaxDataSeeder.Seed(context);
         }

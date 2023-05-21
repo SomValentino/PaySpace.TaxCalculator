@@ -9,6 +9,7 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
         private IPostalCodeTaxMapRepository postalCodeTaxMapRepository;
         private IProgressiveTaxTableRepository progressiveTaxTableRepository;
         private ITaxResultRepository taxResultRepository;
+        private IClientRegistrationRepository clientRegistrationRepository;
 
         public UnitOfWork(TaxDbContext taxDbContect)
         {
@@ -50,6 +51,18 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
             }
         }
 
+        public IClientRegistrationRepository ClientRegistrationRepository
+        {
+            get
+            {
+                if(clientRegistrationRepository == null)
+                {
+                    clientRegistrationRepository = new ClientRegistrationRepository(_taxDbContext); 
+                }
+                return clientRegistrationRepository;
+            }
+        }
+
         public async Task<int> SaveToDatabaseAsync()
         {
             return await _taxDbContext.SaveChangesAsync();
@@ -59,7 +72,7 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {

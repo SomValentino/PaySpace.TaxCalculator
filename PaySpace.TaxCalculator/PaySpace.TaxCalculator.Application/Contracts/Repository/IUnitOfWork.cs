@@ -5,6 +5,7 @@
         IPostalCodeTaxMapRepository PostalCodeTaxMapRepository { get; }
         IProgressiveTaxTableRepository ProgressiveTaxTableRepository { get;  }
         ITaxResultRepository TaxResultRepository { get; }
+        IClientRegistrationRepository ClientRegistrationRepository { get; }
         Task<int> SaveToDatabaseAsync();
     }
 }

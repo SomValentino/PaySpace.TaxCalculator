@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PaySpace.TaxCalculator.Application.Contracts.Repository;
 using PaySpace.TaxCalculator.Infrastructure.Data;
+using System.Linq.Expressions;
 
 namespace PaySpace.TaxCalculator.Infrastructure.Repository
 {
@@ -14,6 +15,12 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
             _context = taxDbContext;
             _dataSet = _context.Set<TEntity>();
         }
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dataSet.AnyAsync(predicate);
+        }
+
         public async Task<TEntity> CreateAsync(TEntity entity)
         {
             return (await _dataSet.AddAsync(entity)).Entity;

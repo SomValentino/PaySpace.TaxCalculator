@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaySpace.TaxCalculator.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using PaySpace.TaxCalculator.Infrastructure.Data;
 namespace PaySpace.TaxCalculator.API.Migrations
 {
     [DbContext(typeof(TaxDbContext))]
-    partial class TaxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230521142656_security")]
+    partial class security
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

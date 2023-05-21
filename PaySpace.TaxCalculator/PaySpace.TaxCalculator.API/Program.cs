@@ -12,11 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApiDocumentation();
 builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationInfrastructureServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 
 var app = builder.Build();
@@ -26,13 +27,14 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaxCalculator API V1"); });
     app.EnsureDatabaseSetup();
 }
 
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

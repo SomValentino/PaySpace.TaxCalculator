@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PaySpace.TaxCalculator.API.Dto;
 using PaySpace.TaxCalculator.Application.Contracts.Services;
 
@@ -6,6 +7,7 @@ namespace PaySpace.TaxCalculator.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TaxController : ControllerBase
     {
         private readonly ITaxService _taxService;
@@ -17,7 +19,16 @@ namespace PaySpace.TaxCalculator.API.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Gets the tax result for specified id
+        /// </summary>
+        /// <param name="id">id of the tax result</param>
+        /// <returns>TaxResult</returns>
         [HttpGet("{id}",Name = "gettaxresult")]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(TaxResponse),StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTaxResult(int id)
         {
             var taxResult = await _taxService.GetTaxResultAsync(id);
@@ -27,7 +38,16 @@ namespace PaySpace.TaxCalculator.API.Controllers
             return Ok(taxResult);   
         }
 
+        /// <summary>
+        /// Calculates the tax given postal code and annual income
+        /// </summary>
+        /// <param name="taxRequest"></param>
+        /// <returns>Tax</returns>
         [HttpPost]
+        [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(TaxResponse),StatusCodes.Status200OK)]
         public async Task<IActionResult> CalculateTax([FromBody] TaxRequest taxRequest)
         {
             _logger.LogInformation("Getting the postal code tax entry for postal code: {code}", taxRequest.PostalCode);
