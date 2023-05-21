@@ -1,27 +1,54 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PaySpace.TaxCalculator.Application.Contracts.Repository;
+﻿using PaySpace.TaxCalculator.Application.Contracts.Repository;
 using PaySpace.TaxCalculator.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Infrastructure.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly TaxDbContext _taxDbContext;
+        private IPostalCodeTaxMapRepository postalCodeTaxMapRepository;
+        private IProgressiveTaxTableRepository progressiveTaxTableRepository;
+        private ITaxResultRepository taxResultRepository;
 
         public UnitOfWork(TaxDbContext taxDbContect)
         {
             _taxDbContext = taxDbContect;
         }
-        public IPostalCodeTaxMapRepository PostalCodeTaxMapRepository => new PostalCodeMapRepository(_taxDbContext);
+        public IPostalCodeTaxMapRepository PostalCodeTaxMapRepository
+        {
+            get
+            {
+                if(postalCodeTaxMapRepository == null)
+                {
+                    postalCodeTaxMapRepository = new PostalCodeMapRepository(_taxDbContext);
+                }
+                return postalCodeTaxMapRepository;
+            }
+        }
 
-        public IProgressiveTaxTableRepository ProgressiveTaxTableRepository => new ProgressiveTableRepository(_taxDbContext);
+        public IProgressiveTaxTableRepository ProgressiveTaxTableRepository
+        {
+            get
+            {
+                if (progressiveTaxTableRepository == null)
+                {
+                    progressiveTaxTableRepository = new ProgressiveTableRepository(_taxDbContext);
+                }
+                return progressiveTaxTableRepository;
+            }
+        }
 
-        public ITaxResultRepository TaxResultRepository => new TaxResultRepository(_taxDbContext);
+        public ITaxResultRepository TaxResultRepository
+        {
+            get
+            {
+                if (taxResultRepository == null)
+                {
+                    taxResultRepository = new TaxResultRepository(_taxDbContext);
+                }
+                return taxResultRepository;
+            }
+        }
 
         public async Task<int> SaveToDatabaseAsync()
         {

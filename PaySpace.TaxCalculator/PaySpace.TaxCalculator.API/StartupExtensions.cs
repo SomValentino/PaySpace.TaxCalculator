@@ -1,6 +1,10 @@
 ﻿
 
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using Newtonsoft.Json;
+using PaySpace.TaxCalculator.API.Dto;
 using PaySpace.TaxCalculator.Application.Contracts.Processors;
 using PaySpace.TaxCalculator.Application.Features.Processors;
 using PaySpace.TaxCalculator.Domain.Enums;
@@ -12,6 +16,13 @@ namespace PaySpace.TaxCalculator.API
 {
     public static class StartupExtensions
     {
+        public static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<TaxDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlServerOptionsAction: sqlOptions => {
+                sqlOptions.MigrationsAssembly(typeof(Program).GetTypeInfo().Assembly.GetName().Name);
+            }));
+        }
         public static void AddInfrastructureServices(this IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
@@ -19,10 +30,26 @@ namespace PaySpace.TaxCalculator.API
             services.AddScoped<IEnumerable<ITaxProcessor>>(options => GetInstances<ITaxProcessor>(serviceProvider));
         }
 
+        public static void UseException(this WebApplication app)
+        {
+            var logger = app.Services.GetService<ILogger<WebApplication>>();
+            app.UseExceptionHandler(option => {
+                option.Run(async context => {
+                    context.Response.ContentType = "application/json";
+                    var exception = context.Features.Get<IExceptionHandlerPathFeature>();
+                    logger?.LogError(exception?.Error.ToString());
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new ErrorResponse
+                    {
+                        StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                        ErrorMessage = "An Error occurred while processing your request. Kindly try again later"
+                    }));
+                });
+            });
+        }
+
         public static void EnsureDatabaseSetup(this WebApplication application)
         {
             var context = application.Services.CreateScope().ServiceProvider.GetRequiredService<TaxDbContext>();
-            
             
             context.Database.Migrate();
 

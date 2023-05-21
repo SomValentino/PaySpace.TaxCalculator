@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PaySpace.TaxCalculator.API.Dto;
 using PaySpace.TaxCalculator.Application.Contracts.Services;
 
@@ -28,23 +27,22 @@ namespace PaySpace.TaxCalculator.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CalculateTax([FromBody] TaxRequest taxRequest)
         {
-            try
+            var postalCodeTaxEntry = await _taxService.GetPostalCodeTaxEntryAsync(taxRequest.PostalCode);
+
+            if (postalCodeTaxEntry == null)
             {
-                var postalCodeTaxEntry = await _taxService.GetPostalCodeTaxEntryAsync(taxRequest.PostalCode);
-
-                if (postalCodeTaxEntry == null) return BadRequest($"No tax mapping found for postal code:{taxRequest.PostalCode}");
-
-                var taxResult = await _taxService.CalculateTaxAsync(postalCodeTaxEntry, taxRequest.AnnualIncome);
-
-                var taxResponse = new TaxResponse(taxResult);
-
-                return CreatedAtAction("gettaxresult", new { id = taxResult.Id }, taxResponse);
+                return BadRequest(new ErrorResponse
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    ErrorMessage = $"No tax mapping found for postal code:{taxRequest.PostalCode}"
+                });
             }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
+            var taxResult = await _taxService.CalculateTaxAsync(postalCodeTaxEntry, taxRequest.AnnualIncome);
+
+            var taxResponse = new TaxResponse(taxResult);
+
+            return CreatedAtAction("gettaxresult", new { id = taxResult.Id }, taxResponse);
         }
     }
 }

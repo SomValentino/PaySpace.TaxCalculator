@@ -37,7 +37,7 @@ namespace PaySpace.TaxCalculator.WebApp.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
-                taxModel.ErrorMessage = "Something went wrong. Kindly try again";
+                taxModel.ErrorMessage = ex.Message;
             }
             return View(taxModel);
         }

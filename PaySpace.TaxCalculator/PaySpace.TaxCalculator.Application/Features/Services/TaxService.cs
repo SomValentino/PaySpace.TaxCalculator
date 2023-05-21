@@ -1,12 +1,8 @@
 ﻿using PaySpace.TaxCalculator.Application.Contracts.Processors;
 using PaySpace.TaxCalculator.Application.Contracts.Repository;
 using PaySpace.TaxCalculator.Application.Contracts.Services;
+using PaySpace.TaxCalculator.Application.Exceptions;
 using PaySpace.TaxCalculator.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Application.Features.Services
 {
@@ -24,7 +20,7 @@ namespace PaySpace.TaxCalculator.Application.Features.Services
         {
             var taxProcessor = _taxProcessorFactory.GetTaxProcessorInstance(postalCodeTaxEntry.TaxCalculationType);
 
-            if (taxProcessor == null) throw new ArgumentNullException($"No tax processor found for tax calculation type {postalCodeTaxEntry.TaxCalculationType}");
+            if (taxProcessor == null) throw new TaxProcessorException($"No tax processor found for tax calculation type {postalCodeTaxEntry.TaxCalculationType}");
 
             var tax = taxProcessor.CalculateTax(annualIncome, postalCodeTaxEntry);
 

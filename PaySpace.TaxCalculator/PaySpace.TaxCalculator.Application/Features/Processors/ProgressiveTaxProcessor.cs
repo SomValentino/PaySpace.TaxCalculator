@@ -1,12 +1,8 @@
 ﻿using PaySpace.TaxCalculator.Application.Contracts.Processors;
 using PaySpace.TaxCalculator.Application.Contracts.Repository;
+using PaySpace.TaxCalculator.Application.Exceptions;
 using PaySpace.TaxCalculator.Domain.Entities;
 using PaySpace.TaxCalculator.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Application.Features.Processors
 {
@@ -20,9 +16,12 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
         }
         public TaxCalculationType GetTaxCalculationType => TaxCalculationType.Progressive;
 
-        public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry = null)
+        public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry)
         {
             var progressiveTable = _unitOfWork.ProgressiveTaxTableRepository.Get();
+
+            if (progressiveTable == null || !progressiveTable.Any()) 
+                throw new TaxProcessorException($"Could not obtain a progressive tax table for {nameof(ProgressiveTaxProcessor)}");
 
             var sum = 0.0M;
             var tax = 0.0M;

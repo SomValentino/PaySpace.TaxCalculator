@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PaySpace.TaxCalculator.Application.Contracts.Repository
+﻿namespace PaySpace.TaxCalculator.Application.Contracts.Repository
 {
     public interface IRepository<TKey, TEntity> where TEntity : class
     {

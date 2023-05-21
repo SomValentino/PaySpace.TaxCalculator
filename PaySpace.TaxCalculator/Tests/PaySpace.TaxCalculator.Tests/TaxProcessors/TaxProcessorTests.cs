@@ -81,7 +81,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
         {
             var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
 
-            var tax = progressiveTaxProcessor.CalculateTax(5691.69M);
+            var tax = progressiveTaxProcessor.CalculateTax(5691.69M, new PostalCodeTaxEntry());
 
             var expectedValue = 569.17M;
 
@@ -93,7 +93,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
         {
             var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
 
-            var tax = progressiveTaxProcessor.CalculateTax(10000.00M);
+            var tax = progressiveTaxProcessor.CalculateTax(10000.00M, new PostalCodeTaxEntry());
 
             var expectedValue = 1082.50M;
 
@@ -105,7 +105,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
         {
             var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
 
-            var tax = progressiveTaxProcessor.CalculateTax(43567.00M);
+            var tax = progressiveTaxProcessor.CalculateTax(43567.00M, new PostalCodeTaxEntry());
 
             var expectedValue = 7079.35M;
 
@@ -117,7 +117,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
         {
             var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
 
-            var tax = progressiveTaxProcessor.CalculateTax(143567.00M);
+            var tax = progressiveTaxProcessor.CalculateTax(143567.00M, new PostalCodeTaxEntry());
 
             var expectedValue = 33918.92M;
 
@@ -129,7 +129,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
         {
             var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
 
-            var tax = progressiveTaxProcessor.CalculateTax(243567.00M);
+            var tax = progressiveTaxProcessor.CalculateTax(243567.00M, new PostalCodeTaxEntry());
 
             var expectedValue = 65519.92M;
 
@@ -141,7 +141,7 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
         {
             var progressiveTaxProcessor = _serviceProvider.GetRequiredService<ProgressiveTaxProcessor>();
 
-            var tax = progressiveTaxProcessor.CalculateTax(443567.00M);
+            var tax = progressiveTaxProcessor.CalculateTax(443567.00M, new PostalCodeTaxEntry());
 
             var expectedValue = 132932.34M;
 

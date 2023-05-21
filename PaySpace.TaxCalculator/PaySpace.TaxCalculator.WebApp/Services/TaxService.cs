@@ -15,7 +15,13 @@ namespace PaySpace.TaxCalculator.WebApp.Services
         {
             var response = await _client.PostAsJsonAsync("api/tax", taxModel);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                var apiErrorResponse = JsonConvert.DeserializeObject<ApiErrorResponse>(error);
+
+                throw new Exception(apiErrorResponse?.ErrorMessage);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
 

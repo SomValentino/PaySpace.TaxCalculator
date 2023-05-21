@@ -1,11 +1,7 @@
 ﻿using PaySpace.TaxCalculator.Application.Contracts.Processors;
+using PaySpace.TaxCalculator.Application.Exceptions;
 using PaySpace.TaxCalculator.Domain.Entities;
 using PaySpace.TaxCalculator.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Application.Features.Processors
 {
@@ -13,8 +9,10 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
     {
         public TaxCalculationType GetTaxCalculationType => TaxCalculationType.FlatRate;
 
-        public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry = null)
+        public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry)
         {
+            if (!entry.Rate.HasValue) throw new TaxProcessorException($"Rate value not configured for {nameof(FlatRateTaxProcessor)}");
+            
             var tax = (entry.Rate / 100) * annualIncome;
 
             return Math.Round(tax.Value, 2);
