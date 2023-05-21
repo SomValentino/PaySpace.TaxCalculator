@@ -44,7 +44,7 @@ namespace PaySpace.TaxCalculator.Application.Features.Services
                 issuer: _issuer,
                 audience: _audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(180),
+                expires: DateTime.UtcNow.AddSeconds(3600),
                 signingCredentials: credentials);
 
             return (tokenId, new JwtSecurityTokenHandler().WriteToken(token));

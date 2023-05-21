@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using PaySpace.TaxCalculator.WebApp.Services;
 
@@ -11,7 +14,15 @@ builder.Services.AddHttpClient("Tax", httpClient =>
     httpClient.DefaultRequestHeaders.Add(
         HeaderNames.Accept, "application/json");
 });
+builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton(o =>
+{
+    var opts = Options.Create(new MemoryDistributedCacheOptions());
+    IDistributedCache cache = new MemoryDistributedCache(opts);
+    return cache;
+});
 builder.Services.AddScoped<ITaxService, TaxService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
