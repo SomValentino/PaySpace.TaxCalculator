@@ -3,11 +3,6 @@ using PaySpace.TaxCalculator.API.Controllers;
 using PaySpace.TaxCalculator.Application.Features.Processors;
 using PaySpace.TaxCalculator.Domain.Entities;
 using PaySpace.TaxCalculator.Tests.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Tests.TaxProcessors
 {

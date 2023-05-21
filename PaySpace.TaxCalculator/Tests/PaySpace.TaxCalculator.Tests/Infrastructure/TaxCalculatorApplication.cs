@@ -6,11 +6,6 @@ using Microsoft.Extensions.Hosting;
 using PaySpace.TaxCalculator.API;
 using PaySpace.TaxCalculator.Application.Contracts.Processors;
 using PaySpace.TaxCalculator.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PaySpace.TaxCalculator.Tests.Infrastructure
 {

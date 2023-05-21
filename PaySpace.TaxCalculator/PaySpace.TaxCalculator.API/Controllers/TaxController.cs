@@ -9,9 +9,12 @@ namespace PaySpace.TaxCalculator.API.Controllers
     public class TaxController : ControllerBase
     {
         private readonly ITaxService _taxService;
-        public TaxController(ITaxService taxService)
+        private readonly ILogger<TaxController> _logger;
+
+        public TaxController(ITaxService taxService, ILogger<TaxController> logger)
         {
             _taxService = taxService;
+            _logger = logger;
         }
 
         [HttpGet("{id}",Name = "gettaxresult")]
@@ -27,7 +30,9 @@ namespace PaySpace.TaxCalculator.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CalculateTax([FromBody] TaxRequest taxRequest)
         {
+            _logger.LogInformation("Getting the postal code tax entry for postal code: {code}", taxRequest.PostalCode);
             var postalCodeTaxEntry = await _taxService.GetPostalCodeTaxEntryAsync(taxRequest.PostalCode);
+            _logger.LogInformation("Found postal code entry for postal code: {code}", taxRequest.PostalCode);
 
             if (postalCodeTaxEntry == null)
             {
@@ -38,7 +43,9 @@ namespace PaySpace.TaxCalculator.API.Controllers
                 });
             }
 
+            _logger.LogInformation("Calculating tax for annual income: {income}", taxRequest.AnnualIncome);
             var taxResult = await _taxService.CalculateTaxAsync(postalCodeTaxEntry, taxRequest.AnnualIncome);
+            _logger.LogInformation("Calculated tax with value: {value}",taxResult.Tax);
 
             var taxResponse = new TaxResponse(taxResult);
 
