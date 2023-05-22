@@ -14,7 +14,7 @@ builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationInfrastructureServices();
 builder.Services.AddInfrastructureServices();
-builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddJwtAuthentication();
 
 
 var app = builder.Build();

@@ -11,14 +11,23 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
 
         public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry)
         {
-            if (!entry.Threshold.HasValue && !entry.Amount.HasValue)
-                throw new TaxProcessorException($"Threshold and Amount value must be configured for {nameof(FlatValueTaxProcessor)}");
-
-            if(annualIncome < entry.Threshold)
+            if (entry == null)
             {
-                var tax = (entry.Rate / 100) * annualIncome;
-                return Math.Round(tax.Value, 2);
+                throw new ArgumentNullException(nameof(entry));
             }
+
+            if (!entry.Threshold.HasValue && !entry.Amount.HasValue && !entry.Rate.HasValue)
+            {
+                throw new InvalidOperationException($"Threshold, Amount and Rate value must be configured for {nameof(FlatValueTaxProcessor)}");
+            }
+
+            if (annualIncome < entry.Threshold.Value)
+            {
+                decimal rate = entry.Rate.Value;
+                decimal tax = (rate / 100) * annualIncome;
+                return decimal.Round(tax, 2, MidpointRounding.AwayFromZero);
+            }
+
             return entry.Amount.Value;
         }
     }

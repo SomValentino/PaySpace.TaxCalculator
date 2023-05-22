@@ -14,38 +14,39 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
         {
             _unitOfWork = unitOfWork;
         }
+
         public TaxCalculationType GetTaxCalculationType => TaxCalculationType.Progressive;
 
         public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry)
         {
             var progressiveTable = _unitOfWork.ProgressiveTaxTableRepository.Get();
 
-            if (progressiveTable == null || !progressiveTable.Any()) 
-                throw new TaxProcessorException($"Could not obtain a progressive tax table for {nameof(ProgressiveTaxProcessor)}");
+            if (progressiveTable == null || !progressiveTable.Any())
+            {
+                throw new ProgressiveTableNotFoundException($"Could not obtain a progressive tax table for {nameof(ProgressiveTaxProcessor)}");
+            }
 
-            var sum = 0.0M;
-            var tax = 0.0M;
+            decimal incomeSum = 0.0M;
+            decimal totalTax = 0.0M;
 
             foreach (var row in progressiveTable)
             {
-                decimal? rangediff = row.ToAmount.HasValue ? 
-                    row.ToAmount.Value - row.FromAmount : null;
+                decimal? rangeDiff = row.ToAmount.HasValue ? row.ToAmount.Value - row.FromAmount : null;
+                decimal sumDiff = annualIncome - incomeSum;
 
-                var sumdiff = annualIncome - sum;
-
-                if(rangediff.HasValue && sumdiff > rangediff)
+                if (rangeDiff.HasValue && sumDiff > rangeDiff)
                 {
-                    sum += rangediff.Value;
-                    tax += (rangediff.Value * row.Rate) / 100;
+                    incomeSum += rangeDiff.Value;
+                    totalTax += (rangeDiff.Value * row.Rate) / 100;
                 }
                 else
                 {
-                    tax += (sumdiff * row.Rate) / 100;
+                    totalTax += (sumDiff * row.Rate) / 100;
                     break;
                 }
             }
 
-            return Math.Round(tax, 2);
+            return decimal.Round(totalTax, 2, MidpointRounding.AwayFromZero);
         }
     }
 }

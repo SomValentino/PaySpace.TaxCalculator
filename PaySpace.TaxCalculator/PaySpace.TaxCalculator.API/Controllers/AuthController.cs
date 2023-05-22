@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PaySpace.TaxCalculator.API.Dto;
 using PaySpace.TaxCalculator.Application.Contracts.Services;
+using PaySpace.TaxCalculator.Application.Models;
 using PaySpace.TaxCalculator.Domain.Entities;
 
 namespace PaySpace.TaxCalculator.API.Controllers
@@ -12,15 +14,15 @@ namespace PaySpace.TaxCalculator.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ISecurityService _securityService;
-        private readonly IConfiguration _configuration;
+        private readonly SecurityServiceConfiguration _configuration;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(ISecurityService securityService,
-            IConfiguration configuration,
+            IOptions<SecurityServiceConfiguration> configuration,
             ILogger<AuthController> logger)
         {
             _securityService = securityService;
-            _configuration = configuration;
+            _configuration = configuration?.Value;
             _logger = logger;
         }
 
@@ -34,7 +36,7 @@ namespace PaySpace.TaxCalculator.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] AuthRequest authRequest)
         {
-            var role = _configuration["role"];
+            var role = _configuration.Role;
             _logger.LogInformation("Generating token for clientId: {id}", authRequest.ClientId);
             var (tokenId, token) = await _securityService.GenerateJwtFor(authRequest.ClientId, role);
             _logger.LogInformation("Obtained token with value: {value}", token);

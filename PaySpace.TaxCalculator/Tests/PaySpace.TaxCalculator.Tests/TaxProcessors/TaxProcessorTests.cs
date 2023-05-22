@@ -61,7 +61,8 @@ namespace PaySpace.TaxCalculator.Tests.TaxProcessors
                 PostalCode = "A100",
                 TaxCalculationType = Domain.Enums.TaxCalculationType.FlatRate,
                 Rate = 5.00M,
-                Amount = 10000.00M
+                Amount = 10000.00M,
+                Threshold = 200000.00M
             };
 
             var flatValueProcessor = _serviceProvider.GetRequiredService<FlatValueTaxProcessor>();

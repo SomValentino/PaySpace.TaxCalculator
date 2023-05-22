@@ -3,72 +3,37 @@ using PaySpace.TaxCalculator.Infrastructure.Data;
 
 namespace PaySpace.TaxCalculator.Infrastructure.Repository
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly TaxDbContext _taxDbContext;
-        private IPostalCodeTaxMapRepository postalCodeTaxMapRepository;
-        private IProgressiveTaxTableRepository progressiveTaxTableRepository;
-        private ITaxResultRepository taxResultRepository;
-        private IClientRegistrationRepository clientRegistrationRepository;
+        private Lazy<IPostalCodeTaxMapRepository> _postalCodeTaxMapRepository;
+        private Lazy<IProgressiveTaxTableRepository> _progressiveTaxTableRepository;
+        private Lazy<ITaxResultRepository> _taxResultRepository;
+        private Lazy<IClientRegistrationRepository> _clientRegistrationRepository;
 
-        public UnitOfWork(TaxDbContext taxDbContect)
+        public UnitOfWork(TaxDbContext taxDbContext)
         {
-            _taxDbContext = taxDbContect;
-        }
-        public IPostalCodeTaxMapRepository PostalCodeTaxMapRepository
-        {
-            get
-            {
-                if(postalCodeTaxMapRepository == null)
-                {
-                    postalCodeTaxMapRepository = new PostalCodeMapRepository(_taxDbContext);
-                }
-                return postalCodeTaxMapRepository;
-            }
+            _taxDbContext = taxDbContext;
+            _postalCodeTaxMapRepository = new Lazy<IPostalCodeTaxMapRepository>(() => new PostalCodeMapRepository(_taxDbContext));
+            _progressiveTaxTableRepository = new Lazy<IProgressiveTaxTableRepository>(() => new ProgressiveTableRepository(_taxDbContext));
+            _taxResultRepository = new Lazy<ITaxResultRepository>(() => new TaxResultRepository(_taxDbContext));
+            _clientRegistrationRepository = new Lazy<IClientRegistrationRepository>(() => new ClientRegistrationRepository(_taxDbContext));
         }
 
-        public IProgressiveTaxTableRepository ProgressiveTaxTableRepository
-        {
-            get
-            {
-                if (progressiveTaxTableRepository == null)
-                {
-                    progressiveTaxTableRepository = new ProgressiveTableRepository(_taxDbContext);
-                }
-                return progressiveTaxTableRepository;
-            }
-        }
+        public IPostalCodeTaxMapRepository PostalCodeTaxMapRepository => _postalCodeTaxMapRepository.Value;
 
-        public ITaxResultRepository TaxResultRepository
-        {
-            get
-            {
-                if (taxResultRepository == null)
-                {
-                    taxResultRepository = new TaxResultRepository(_taxDbContext);
-                }
-                return taxResultRepository;
-            }
-        }
+        public IProgressiveTaxTableRepository ProgressiveTaxTableRepository => _progressiveTaxTableRepository.Value;
 
-        public IClientRegistrationRepository ClientRegistrationRepository
-        {
-            get
-            {
-                if(clientRegistrationRepository == null)
-                {
-                    clientRegistrationRepository = new ClientRegistrationRepository(_taxDbContext); 
-                }
-                return clientRegistrationRepository;
-            }
-        }
+        public ITaxResultRepository TaxResultRepository => _taxResultRepository.Value;
+
+        public IClientRegistrationRepository ClientRegistrationRepository => _clientRegistrationRepository.Value;
 
         public async Task<int> SaveToDatabaseAsync()
         {
             return await _taxDbContext.SaveChangesAsync();
         }
-        private bool disposed = false;
 
+        private bool disposed = false;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -79,7 +44,7 @@ namespace PaySpace.TaxCalculator.Infrastructure.Repository
                     _taxDbContext.Dispose();
                 }
             }
-            this.disposed = true;
+            disposed = true;
         }
 
         public void Dispose()
