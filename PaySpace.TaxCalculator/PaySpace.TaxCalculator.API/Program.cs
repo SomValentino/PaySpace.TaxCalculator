@@ -1,9 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using PaySpace.TaxCalculator.API;
 using PaySpace.TaxCalculator.Application;
 using PaySpace.TaxCalculator.Infrastructure;
-using PaySpace.TaxCalculator.Infrastructure.Data;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
