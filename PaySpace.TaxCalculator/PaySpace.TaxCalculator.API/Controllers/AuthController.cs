@@ -35,8 +35,11 @@ namespace PaySpace.TaxCalculator.API.Controllers
         public async Task<IActionResult> Register([FromBody] AuthRequest authRequest)
         {
             var role = _configuration["role"];
+            _logger.LogInformation("Generating token for clientId: {id}", authRequest.ClientId);
             var (tokenId, token) = await _securityService.GenerateJwtFor(authRequest.ClientId, role);
+            _logger.LogInformation("Obtained token with value: {value}", token);
 
+            _logger.LogInformation("Registering client with name: {name}", authRequest.ClientName);
             var clientRegistration = new ClientRegistration
             {
                 ClientId = authRequest.ClientId,
@@ -47,6 +50,7 @@ namespace PaySpace.TaxCalculator.API.Controllers
             };
 
             await _securityService.RegisterClient(clientRegistration);
+            _logger.LogInformation("Successfully registered client");
 
             return Ok(token);
         }
