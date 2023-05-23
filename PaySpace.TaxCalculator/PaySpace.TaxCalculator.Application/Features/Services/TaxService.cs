@@ -36,7 +36,7 @@ namespace PaySpace.TaxCalculator.Application.Features.Services
             _logger.LogInformation("Obtained tax processor of type: {type}", taxProcessor.GetType());
 
             _logger.LogInformation("Calculating tax based on type: {type}", postalCodeTaxEntry.TaxCalculationType.ToString());
-            var tax = taxProcessor.CalculateTax(annualIncome, postalCodeTaxEntry);
+            var tax = taxProcessor.CalculateTaxAsync(annualIncome, postalCodeTaxEntry);
             _logger.LogInformation("Obtained tax with value: {value}", tax);
 
             var taxResult = new TaxResult

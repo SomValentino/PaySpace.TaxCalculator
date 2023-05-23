@@ -8,7 +8,7 @@ namespace PaySpace.TaxCalculator.Application.Features.Processors
     {
         public TaxCalculationType GetTaxCalculationType => TaxCalculationType.FlatRate;
 
-        public decimal CalculateTax(decimal annualIncome, PostalCodeTaxEntry entry)
+        public decimal CalculateTaxAsync(decimal annualIncome, PostalCodeTaxEntry entry)
         {
             if (entry == null)
             {
